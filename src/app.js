@@ -1,6 +1,6 @@
 import express from "express";
 
-import cnf from "./utils/config.js";
+import cnf from "./config.js";
 
 const app = express();
 

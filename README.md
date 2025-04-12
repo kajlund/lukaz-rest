@@ -12,8 +12,10 @@ The server loads different environment variables depending on environment using 
 
 - [Express.js v4](https://expressjs.com/)
 - [Mongoose ODM](https://mongoosejs.com/)
-
+- [Pino](https://getpino.io/#/) logging
+- [pino-http](https://github.com/pinojs/pino-http#readme)
 ### Development Dependencies
 
 - [Eslint](https://eslint.org/)
 - [Prettier](https://prettier.io/) code formatter
+- [pino-pretty](https://github.com/pinojs/pino-pretty#readme)

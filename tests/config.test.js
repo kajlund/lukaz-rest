@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import cnf from "../src/utils/config.js";
+import cnf from "../src/config.js";
 
 describe("Config tests", () => {
   it("isDev should be false", () => {
