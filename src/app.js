@@ -3,6 +3,8 @@ import express from "express";
 import cnf from "./config.js";
 import db from "./db.js";
 import router from "./router.js";
+import { NotFoundError } from "./errors.js";
+import { errorHandler } from "./middleware/error-handler.js";
 
 class ExpressApp {
   constructor(cnf, db, appRouter) {
@@ -22,8 +24,12 @@ class ExpressApp {
     this.#setupMiddleware();
     // Attach routes
     this.app.use(this.appRouter.router);
-    // ToDo: Add 404 route
-    // ToDo: Add Generic Error Handler
+    // 404 handler
+    this.app.use((req, _res, next) => {
+      next(new NotFoundError(`Route ${req.originalUrl} was not found`));
+    });
+    // Error handler
+    this.app.use(errorHandler);
   }
 
   async shutdown() {
