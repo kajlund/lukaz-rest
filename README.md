@@ -17,5 +17,6 @@ The server loads different environment variables depending on environment using 
 ### Development Dependencies
 
 - [Eslint](https://eslint.org/)
+- [Japa](https://japa.dev/docs/introduction) testing framework
 - [Prettier](https://prettier.io/) code formatter
 - [pino-pretty](https://github.com/pinojs/pino-pretty#readme)
