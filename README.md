@@ -10,10 +10,12 @@ The server loads different environment variables depending on environment using 
 
 ### Dependencies
 
+- [Ajv JSON schema validator](https://ajv.js.org/)
 - [Express.js v4](https://expressjs.com/)
 - [Mongoose ODM](https://mongoosejs.com/)
 - [Pino](https://getpino.io/#/) logging
 - [pino-http](https://github.com/pinojs/pino-http#readme)
+
 ### Development Dependencies
 
 - [Eslint](https://eslint.org/)
