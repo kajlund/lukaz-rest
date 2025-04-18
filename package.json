@@ -10,8 +10,7 @@
     "start": "node ./src/server.js",
     "testserver": "node --env-file=.env.test ./src/server.js",
     "teste2e": "node bin/test.js e2e --bail",
-    "test": "node --env-file=.env.test bin/test.js unit --bail",
-    "test:watch": "node --env-file=.env.test --test --watch"
+    "test": "node --env-file=.env.test bin/test.js unit --bail"
   },
   "keywords": [],
   "author": "",
