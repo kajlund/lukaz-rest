@@ -1,7 +1,8 @@
 import express from "express";
-
+import httpLogger from "pino-http";
 import cnf from "./config.js";
 import db from "./db.js";
+import log from "./logger.js";
 import router from "./router.js";
 import { NotFoundError } from "./errors.js";
 import { errorHandler } from "./middleware/error-handler.js";
@@ -17,6 +18,9 @@ class ExpressApp {
   #setupMiddleware() {
     this.app.disable("x-powered-by");
     this.app.use(express.json());
+    if (this.cnf.LOG_HTTP) {
+      this.app.use(httpLogger({ logger: log }));
+    }
   }
 
   async initialize() {
