@@ -2,6 +2,8 @@ import express from "express";
 
 import log from "./logger.js";
 
+import activityRoutes from "./api/activities/activity.routes.js";
+
 const rootRoutes = {
   group: {
     prefix: "",
@@ -41,4 +43,4 @@ class AppRouter {
   }
 }
 
-export default new AppRouter([rootRoutes]);
+export default new AppRouter([rootRoutes, activityRoutes]);
