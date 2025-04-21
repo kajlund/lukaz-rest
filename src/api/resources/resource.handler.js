@@ -48,7 +48,8 @@ class ResourceHandler {
 
   async queryResources(req, res, next) {
     try {
-      const resources = await svcResource.queryResources();
+      log.debug(req.query, "Querying resources");
+      const resources = await svcResource.queryResources(req.query);
       return res.status(Codes.OK).json({
         success: true,
         status: Codes.OK,

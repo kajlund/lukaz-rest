@@ -1,5 +1,5 @@
 import hnd from "./resource.handler.js";
-import { resourceSchema } from "./resource.validators.js";
+import { resourceSchema, querySchema } from "./resource.validators.js";
 import { idSchema } from "../../utils/shared-schemas.js";
 import validate from "../../middleware/validator.js";
 
@@ -12,7 +12,7 @@ export default {
     {
       method: "get",
       path: "/",
-      middleware: [],
+      middleware: [validate({ query: querySchema })],
       handler: hnd.queryResources,
     },
     {

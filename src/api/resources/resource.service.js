@@ -29,7 +29,8 @@ class ResourceService {
     return found;
   }
 
-  async queryResources(tags = "", name = "", sort = "name") {
+  async queryResources(query) {
+    const { tags, name, sort } = query;
     const qry = {};
     if (tags) {
       qry.tags = { $all: tags.split(",").map((tag) => tag.trim()) };
@@ -41,7 +42,7 @@ class ResourceService {
     log.debug(qry, "Finding resources using query:");
     log.debug(sortObj, "and sort:");
     const resources = await Resource.find(qry).sort(sortObj).lean();
-    log.debug(resources, "Found resources:");
+    // log.debug(resources, "Found resources:");
     return resources;
   }
 

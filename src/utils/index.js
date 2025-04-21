@@ -19,6 +19,8 @@ export function mToKM(m) {
 
 export function parseSort(sortStr) {
   const sortObj = {};
+  if (!sortStr) return sortObj;
+
   const fldArr = sortStr.split(",");
   fldArr.forEach((fld) => {
     if (fld.indexOf("-") > -1) {

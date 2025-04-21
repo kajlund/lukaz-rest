@@ -1,9 +1,26 @@
+export const querySchema = {
+  type: "object",
+  properties: {
+    tags: {
+      type: "string",
+      description: "Tags associated with the resource",
+      example: ["node", "framework"],
+    },
+    name: {
+      type: "string",
+      description: "Part of nameof the resource",
+      example: "test",
+    },
+  },
+};
+
 export const resourceSchema = {
   type: "object",
   required: ["name", "url"],
   properties: {
     name: {
       type: "string",
+      transform: ["trim"],
       minLength: 2,
       maxLength: 100,
       description: "Name of the resource",
@@ -11,6 +28,8 @@ export const resourceSchema = {
     },
     url: {
       type: "string",
+      transform: ["trim", "toLowerCase"],
+      format: "uri",
       description: "URL for the resource",
       example: "https://www.google.com",
     },
