@@ -3,6 +3,7 @@ import express from "express";
 import log from "./logger.js";
 
 import activityRoutes from "./api/activities/activity.routes.js";
+import resourceRoutes from "./api/resources/resource.routes.js";
 
 const rootRoutes = {
   group: {
@@ -43,4 +44,4 @@ class AppRouter {
   }
 }
 
-export default new AppRouter([rootRoutes, activityRoutes]);
+export default new AppRouter([rootRoutes, activityRoutes, resourceRoutes]);
