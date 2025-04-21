@@ -20,7 +20,7 @@ class ActivityHandler {
 
   async deleteActivity(req, res, next) {
     try {
-      const activity = await svcActivity.deleteActivity(req.objectId);
+      const activity = await svcActivity.deleteActivity(req.params.id);
       return res.status(Codes.OK).json({
         success: true,
         status: Codes.OK,

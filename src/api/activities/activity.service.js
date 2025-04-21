@@ -48,12 +48,12 @@ class ActivityService {
   }
 
   async deleteActivity(id) {
+    log.debug(`Deleting activity ${id}`);
     const doc = await Activity.findByIdAndDelete(id);
-    log.debug(doc, "Deleted activity:");
-
-    // const deleted = this.#docToEntity(doc.toJSON());
-    // log.debug(deleted, "Deleted activity:");
-    // return deleted;
+    if (!doc) throw new NotFoundError(`Activity with id ${id} not found`);
+    const deleted = this.#docToEntity(doc.toJSON());
+    log.debug(deleted, "Deleted activity:");
+    return deleted;
   }
 
   async findActivityById(id) {
