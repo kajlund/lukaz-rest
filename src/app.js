@@ -1,53 +1,48 @@
 import express from "express";
 import httpLogger from "pino-http";
-import { getConfig } from "./config.js";
-import { getLogger } from "./logger.js";
-import { getDB } from "./db.js";
 
-import router from "./router.js";
 import { NotFoundError } from "./errors.js";
 import { errorHandler } from "./middleware/error-handler.js";
 
-const cnf = getConfig();
-const log = getLogger(cnf);
-const db = getDB(cnf, log);
+export function getApplication(options) {
+  const { cnf, log, db } = options;
+  const app = express();
+  const router = express.Router();
 
-class ExpressApp {
-  constructor(cnf, db, appRouter) {
-    this.cnf = cnf;
-    this.db = db;
-    this.app = express();
-    this.appRouter = appRouter;
-  }
-
-  #setupMiddleware() {
-    this.app.disable("x-powered-by");
-    this.app.use(express.json());
-    if (this.cnf.LOG_HTTP) {
-      this.app.use(httpLogger({ logger: log }));
-    }
-  }
-
-  async initialize() {
-    await this.db.connect();
-    this.#setupMiddleware();
-    // Attach routes
-    this.app.use(this.appRouter.router);
-    // 404 handler
-    this.app.use((req, _res, next) => {
-      next(new NotFoundError(`Route ${req.originalUrl} was not found`));
+  const addGroups = (groups, prefix = "") => {
+    groups.forEach(({ group, routes }) => {
+      routes.forEach(({ method, path, middleware = [], handler }) => {
+        log.info(`Route: ${method} ${prefix}${group.prefix}${path}`);
+        router[method](prefix + group.prefix + path, [...(group.middleware || []), ...middleware], handler);
+      });
     });
-    // Error handler
-    this.app.use(errorHandler);
-  }
+  };
 
-  async shutdown() {
-    await this.db.disconnect();
-  }
+  return {
+    app,
+    connectDB: async () => {
+      await db.connect();
+    },
+    disconnectDB: async () => {
+      await db.disconnect();
+    },
+    attachRoutes: (routes) => {
+      // Attach routes
+      addGroups(routes);
+      app.use(router);
+      // Add 404 handler
+      app.use((req, _res, next) => {
+        next(new NotFoundError(`Route ${req.originalUrl} was not found`));
+      });
+      // Add Generic Error handler
+      app.use(errorHandler);
+    },
+    setupMiddleware: () => {
+      app.disable("x-powered-by");
+      app.use(express.json());
+      if (cnf.LOG_HTTP) {
+        app.use(httpLogger({ logger: log }));
+      }
+    },
+  };
 }
-export default new ExpressApp(cnf, db, router);
-
-// app.listen(cnf.PORT, () => {
-//   console.log(`NODE_ENV=${process.env.NODE_ENV}`);
-//   console.log(`App running on port ${cnf.PORT}`);
-// });
