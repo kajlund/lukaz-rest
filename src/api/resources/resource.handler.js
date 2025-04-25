@@ -1,9 +1,11 @@
-import { getLogger } from "../../logger.js";
-import svcResource from "./resource.service.js";
 import { Codes } from "../../status.js";
 import { NotFoundError, InternalServerError } from "../../errors.js";
+import { getLogger } from "../../logger.js";
+import { getResourceServices } from "./resource.service.js";
 
 const log = getLogger();
+const svcResource = getResourceServices({ log });
+
 class ResourceHandler {
   async createResource(req, res, next) {
     try {

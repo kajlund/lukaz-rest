@@ -1,14 +1,16 @@
-import svcActivity from "./activity.service.js";
+import { getActivityServices } from "./activity.service.js";
 import { Codes } from "../../status.js";
 import { getLogger } from "../../logger.js";
+import { NotFoundError, InternalServerError } from "../../errors.js";
 
 const log = getLogger();
-
+const svcActivity = getActivityServices({ log });
 class ActivityHandler {
   async createActivity(req, res, next) {
     try {
       log.info("Creating activity", req.body);
       const activity = await svcActivity.createActivty(req.body);
+      if (!activity) throw new InternalServerError("Failed creating activity");
       res.status(Codes.OK).json({
         success: true,
         status: Codes.OK,
@@ -21,12 +23,14 @@ class ActivityHandler {
   }
 
   async deleteActivity(req, res, next) {
+    const { id } = req.params;
     try {
-      const activity = await svcActivity.deleteActivity(req.params.id);
+      const activity = await svcActivity.deleteActivity(id);
+      if (!activity) throw new InternalServerError(`Failed to delete activity with id ${id}`);
       return res.status(Codes.OK).json({
         success: true,
         status: Codes.OK,
-        message: `Activity ${req.objectId} deleted`,
+        message: `Deleted activity ${id}`,
         data: activity,
       });
     } catch (err) {
@@ -35,8 +39,10 @@ class ActivityHandler {
   }
 
   async findActivityById(req, res, next) {
+    const { id } = req.params;
     try {
-      const activity = await svcActivity.findActivityById(req.params.id);
+      const activity = await svcActivity.findActivityById(id);
+      if (!activity) throw new NotFoundError(`Activity with id ${id} not found`);
       return res.status(Codes.OK).json({
         success: true,
         status: Codes.OK,
@@ -50,7 +56,7 @@ class ActivityHandler {
 
   async queryActivities(req, res, next) {
     try {
-      const activities = await svcActivity.queryActivities({});
+      const activities = await svcActivity.queryActivities(req.query);
       return res.status(Codes.OK).json({
         success: true,
         status: Codes.OK,
@@ -63,13 +69,14 @@ class ActivityHandler {
   }
 
   async updateActivity(req, res, next) {
+    const { params, body } = req;
     try {
-      const { params, body } = req;
       const activity = await svcActivity.updateActivity(params.id, body);
+      if (!activity) throw new InternalServerError(`Failed to update activity with id ${params.id}`);
       return res.status(Codes.OK).json({
         success: true,
         status: Codes.OK,
-        message: `Activity ${params.id} updated`,
+        message: `Upfated activity ${params.id}`,
         data: activity,
       });
     } catch (err) {

@@ -1,13 +1,11 @@
 import Activity from "./activity.model.js";
-import { getLogger } from "../../logger.js";
-import { NotFoundError } from "../../errors.js";
-
 import { ActivityBuilder } from "./activity.definitions.js";
 import { mToKM, secToHHMMSS, secToMMSS } from "../../utils/index.js";
 
-const log = getLogger();
-class ActivityService {
-  #docToEntity(doc) {
+export function getActivityServices(options) {
+  const { log } = options;
+
+  const docToEntity = (doc) => {
     return {
       id: doc._id,
       when: doc.when,
@@ -24,76 +22,80 @@ class ActivityService {
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     };
-  }
+  };
 
-  async createActivty(data) {
-    const activity = new ActivityBuilder()
-      .setTime(data.when)
-      .setType(data.activityType)
-      .setTitle(data.title)
-      .setDescription(data.description)
-      .setDuration(data.duration)
-      .setDistance(data.distance)
-      .setPace(data.pace)
-      .setElevation(data.elevation)
-      .setCalories(data.calories)
-      .setHeartRate(data.heartRate)
-      .setCadence(data.cadence)
-      .build();
+  return {
+    createActivity: async (data) => {
+      const activity = new ActivityBuilder()
+        .setTime(data.when)
+        .setType(data.activityType)
+        .setTitle(data.title)
+        .setDescription(data.description)
+        .setDuration(data.duration)
+        .setDistance(data.distance)
+        .setPace(data.pace)
+        .setElevation(data.elevation)
+        .setCalories(data.calories)
+        .setHeartRate(data.heartRate)
+        .setCadence(data.cadence)
+        .build();
 
-    log.info(activity, "Creating activity:");
-    const doc = await Activity.create(activity);
-    const added = this.#docToEntity(doc.toJSON());
-    log.debug(added, "Created activity:");
-    return added;
-  }
+      log.debug(activity, "Creating new activity:");
+      const doc = await Activity.create(activity);
+      if (!doc) return null;
+      const created = docToEntity(doc.toJSON());
+      log.debug(created, "Created new activity:");
+      return created;
+    },
+    deleteActivity: async (id) => {
+      log.debug(`Deleting activity ${id}`);
+      const doc = await Activity.findByIdAndDelete(id);
+      if (!doc) return null;
+      const deleted = docToEntity(doc.toJSON());
+      log.debug(deleted, "Deleted activity:");
+      return deleted;
+    },
+    findActivityById: async (id) => {
+      const doc = await Activity.findById(id);
+      if (!doc) return null;
+      const found = docToEntity(doc.toJSON());
+      log.debug(found, "Found activity:");
+      return found;
+    },
+    queryActivities: async (query) => {
+      const { title, sort } = query;
+      const qry = {};
+      if (title) {
+        qry.title = { $regex: title, $options: "i" };
+      }
+      const sortObj = parseSort(sort);
+      log.debug({ qry, sort: sortObj }, "Querying activities:");
+      const documents = await Activity.find(qry).sort(sortObj).lean();
+      const activities = documents.map((doc) => docToEntity(doc));
+      // log.debug(activities, "Found activities:");
+      return activities;
+    },
+    updateActivity: async (id, data) => {
+      log.debug(data, `Updating activity ${id}`);
+      const activity = new ActivityBuilder()
+        .setTime(data.when)
+        .setType(data.activityType)
+        .setTitle(data.title)
+        .setDescription(data.description)
+        .setDuration(data.duration)
+        .setDistance(data.distance)
+        .setPace(data.pace)
+        .setElevation(data.elevation)
+        .setCalories(data.calories)
+        .setHeartRate(data.heartRate)
+        .setCadence(data.cadence)
+        .build();
 
-  async deleteActivity(id) {
-    log.debug(`Deleting activity ${id}`);
-    const doc = await Activity.findByIdAndDelete(id);
-    if (!doc) throw new NotFoundError(`Activity with id ${id} not found`);
-    const deleted = this.#docToEntity(doc.toJSON());
-    log.debug(deleted, "Deleted activity:");
-    return deleted;
-  }
-
-  async findActivityById(id) {
-    const doc = await Activity.findById(id);
-    if (!doc) throw new NotFoundError(`Activity with id ${id} not found`);
-    const found = this.#docToEntity(doc.toJSON());
-    log.debug(found, "Found activity:");
-    return found;
-  }
-
-  async queryActivities(qry = {}, sort = { when: -1 }) {
-    log.debug(qry, "Finding activities using query:");
-    const docs = await Activity.find(qry).sort(sort).lean();
-    const activities = docs.map((doc) => this.#docToEntity(doc));
-    log.debug(activities, "Found activities:");
-    return activities;
-  }
-
-  async updateActivity(id, data) {
-    log.debug(data, `Updating activity for ${id}:`);
-    const activity = new ActivityBuilder()
-      .setTime(data.when)
-      .setType(data.activityType)
-      .setTitle(data.title)
-      .setDescription(data.description)
-      .setDuration(data.duration)
-      .setDistance(data.distance)
-      .setPace(data.pace)
-      .setElevation(data.elevation)
-      .setCalories(data.calories)
-      .setHeartRate(data.heartRate)
-      .setCadence(data.cadence)
-      .build();
-
-    const doc = await Activity.findByIdAndUpdate(id, activity, { new: true });
-    const updated = this.#docToEntity(doc.toJSON());
-    log.debug(updated, "Updated activity:");
-    return updated;
-  }
+      const doc = await Activity.findByIdAndUpdate(id, activity, { new: true });
+      if (!doc) return null;
+      const updated = docToEntity(doc.toJSON());
+      log.debug(updated, "Updated activity:");
+      return updated;
+    },
+  };
 }
-
-export default new ActivityService();
