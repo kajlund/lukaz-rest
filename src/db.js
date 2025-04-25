@@ -1,35 +1,24 @@
 import mongoose from "mongoose";
 
-import { getConfig } from "./config.js";
-import { getLogger } from "./logger.js";
-
-const cnf = getConfig();
-const log = getLogger(cnf);
-
-class DBConnection {
-  constructor(cnf) {
-    this.cnf = cnf;
-  }
-
-  async connect() {
-    try {
-      await mongoose.connect(this.cnf.DB_CONNECTION);
-      log.info("MongoDB connected");
-    } catch (err) {
-      log.error(err, "Database connection error:");
-      throw err;
-    }
-  }
-
-  async disconnect() {
-    try {
-      await mongoose.connection.close();
-      log.info("MongoDB connection closed");
-    } catch (err) {
-      log.error(err, "Error Disconnecting from Database:");
-      throw err;
-    }
-  }
+export function getDB(cnf, log) {
+  return {
+    connect: async () => {
+      try {
+        await mongoose.connect(cnf.DB_CONNECTION);
+        log.info("MongoDB connected");
+      } catch (err) {
+        log.error(err, "Database connection error:");
+        throw err;
+      }
+    },
+    disconnect: async () => {
+      try {
+        await mongoose.connection.close();
+        log.info("MongoDB connection closed");
+      } catch (err) {
+        log.error(err, "Error Disconnecting from Database:");
+        throw err;
+      }
+    },
+  };
 }
-
-export default new DBConnection(cnf);

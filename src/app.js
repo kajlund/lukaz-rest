@@ -1,13 +1,17 @@
 import express from "express";
 import httpLogger from "pino-http";
 import { getConfig } from "./config.js";
-import db from "./db.js";
 import { getLogger } from "./logger.js";
+import { getDB } from "./db.js";
+
 import router from "./router.js";
 import { NotFoundError } from "./errors.js";
 import { errorHandler } from "./middleware/error-handler.js";
 
-const log = getLogger();
+const cnf = getConfig();
+const log = getLogger(cnf);
+const db = getDB(cnf, log);
+
 class ExpressApp {
   constructor(cnf, db, appRouter) {
     this.cnf = cnf;
@@ -41,7 +45,6 @@ class ExpressApp {
     await this.db.disconnect();
   }
 }
-const cnf = getConfig();
 export default new ExpressApp(cnf, db, router);
 
 // app.listen(cnf.PORT, () => {
