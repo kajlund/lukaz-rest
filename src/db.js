@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 
-import cnf from "./config.js";
+import { getConfig } from "./config.js";
+
+const cnf = getConfig();
+
 import log from "./logger.js";
 
 class DBConnection {

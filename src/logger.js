@@ -1,6 +1,8 @@
 import pino from "pino";
 
-import cnf from "./config.js";
+import { getConfig } from "./config.js";
+
+const cnf = getConfig();
 
 const logConfig = {
   level: cnf.LOG_LEVEL,

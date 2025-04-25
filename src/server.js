@@ -1,9 +1,11 @@
 import http from "node:http";
 import util from "node:util";
 
-import cnf from "./config.js";
+import { getConfig } from "./config.js";
 import expressApp from "./app.js";
 import log from "./logger.js";
+
+const cnf = getConfig();
 
 log.info("Starting server...");
 log.info(`Environment: ${cnf.NODE_ENV}`);
