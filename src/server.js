@@ -3,9 +3,10 @@ import util from "node:util";
 
 import { getConfig } from "./config.js";
 import expressApp from "./app.js";
-import log from "./logger.js";
+import { getLogger } from "./logger.js";
 
 const cnf = getConfig();
+const log = getLogger(cnf);
 
 log.info("Starting server...");
 log.info(`Environment: ${cnf.NODE_ENV}`);

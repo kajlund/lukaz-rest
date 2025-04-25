@@ -1,10 +1,11 @@
 import Activity from "./activity.model.js";
-import log from "../../logger.js";
+import { getLogger } from "../../logger.js";
 import { NotFoundError } from "../../errors.js";
 
 import { ActivityBuilder } from "./activity.definitions.js";
 import { mToKM, secToHHMMSS, secToMMSS } from "../../utils/index.js";
 
+const log = getLogger();
 class ActivityService {
   #docToEntity(doc) {
     return {

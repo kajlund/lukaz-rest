@@ -1,16 +1,19 @@
+import { getLogger } from "../../logger.js";
 import svcResource from "./resource.service.js";
 import { Codes } from "../../status.js";
-import log from "../../logger.js";
+import { NotFoundError, InternalServerError } from "../../errors.js";
 
+const log = getLogger();
 class ResourceHandler {
   async createResource(req, res, next) {
     try {
-      log.info("Creating resource", req.body);
+      log.debug(req.body, "Creating resource:");
       const resource = await svcResource.createResource(req.body);
+      if (!resource) throw new InternalServerError("Failed creating resource");
       res.status(Codes.OK).json({
         success: true,
         status: Codes.OK,
-        message: "Resource created",
+        message: `Created resource ${resource.name}`,
         data: resource,
       });
     } catch (err) {
@@ -19,13 +22,15 @@ class ResourceHandler {
   }
 
   async deleteResource(req, res, next) {
+    const { id } = req.params;
     try {
-      const activity = await svcResource.deleteResource(req.params.id);
+      const resource = await svcResource.deleteResource(id);
+      if (!resource) throw new InternalServerError(`Failed to delete resource with id ${id}`);
       return res.status(Codes.OK).json({
         success: true,
         status: Codes.OK,
-        message: `Activity ${req.objectId} deleted`,
-        data: activity,
+        message: `Deleted resource ${id}`,
+        data: resource,
       });
     } catch (err) {
       next(err);
@@ -33,13 +38,15 @@ class ResourceHandler {
   }
 
   async findResourceById(req, res, next) {
+    const { id } = req.params;
     try {
-      const activity = await svcResource.findResourceById(req.params.id);
+      const resource = await svcResource.findResourceById(id);
+      if (!resource) throw new NotFoundError(`Resource with id ${id} not found`);
       return res.status(Codes.OK).json({
         success: true,
         status: Codes.OK,
-        message: `Activity ${activity.id} found`,
-        data: activity,
+        message: `Found resource ${id}`,
+        data: resource,
       });
     } catch (err) {
       next(err);
@@ -62,13 +69,14 @@ class ResourceHandler {
   }
 
   async updateResource(req, res, next) {
+    const { params, body } = req;
     try {
-      const { params, body } = req;
       const resource = await svcResource.updateResource(params.id, body);
+      if (!res) throw new InternalServerError(`Failed to update resource with id ${params.id}`);
       return res.status(Codes.OK).json({
         success: true,
         status: Codes.OK,
-        message: "Resource updated",
+        message: `Updated resource ${params.id}`,
         data: resource,
       });
     } catch (err) {

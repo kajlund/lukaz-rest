@@ -1,8 +1,10 @@
 import { ValidationError } from "express-json-validator-middleware";
 
 import { Codes, Phrases } from "../status.js";
-import log from "../logger.js";
+import { getLogger } from "../logger.js";
 import { BadRequestError } from "../errors.js";
+
+const log = getLogger();
 
 // eslint-disable-next-line no-unused-vars
 export const errorHandler = (err, req, res, next) => {

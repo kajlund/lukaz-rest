@@ -1,12 +1,14 @@
 import Resource from "./resource.model.js";
-import log from "../../logger.js";
-import { NotFoundError } from "../../errors.js";
+import { getLogger } from "../../logger.js";
 import { parseSort } from "../../utils/index.js";
+
+const log = getLogger();
 
 class ResourceService {
   async createResource(data) {
-    log.info(data, "Creating activity:");
+    log.debug(data, "Creating activity:");
     const doc = await Resource.create(data);
+    if (!doc) return null;
     const added = doc.toJSON();
     log.debug(added, "Created resource:");
     return added;
@@ -15,7 +17,7 @@ class ResourceService {
   async deleteResource(id) {
     log.debug(`Deleting resource ${id}`);
     const doc = await Resource.findByIdAndDelete(id);
-    if (!doc) throw new NotFoundError(`Resource with id ${id} not found`);
+    if (!doc) return null;
     const deleted = doc.toJSON();
     log.debug(deleted, "Deleted resource:");
     return deleted;
@@ -23,7 +25,6 @@ class ResourceService {
 
   async findResourceById(id) {
     const doc = await Resource.findById(id);
-    if (!doc) throw new NotFoundError(`Resource with id ${id} not found`);
     const found = doc.toJSON();
     log.debug(found, "Found resource:");
     return found;

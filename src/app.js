@@ -2,11 +2,12 @@ import express from "express";
 import httpLogger from "pino-http";
 import { getConfig } from "./config.js";
 import db from "./db.js";
-import log from "./logger.js";
+import { getLogger } from "./logger.js";
 import router from "./router.js";
 import { NotFoundError } from "./errors.js";
 import { errorHandler } from "./middleware/error-handler.js";
 
+const log = getLogger();
 class ExpressApp {
   constructor(cnf, db, appRouter) {
     this.cnf = cnf;

@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 
 import { getConfig } from "./config.js";
+import { getLogger } from "./logger.js";
 
 const cnf = getConfig();
-
-import log from "./logger.js";
+const log = getLogger(cnf);
 
 class DBConnection {
   constructor(cnf) {

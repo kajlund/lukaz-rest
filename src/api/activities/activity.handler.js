@@ -1,6 +1,8 @@
 import svcActivity from "./activity.service.js";
 import { Codes } from "../../status.js";
-import log from "../../logger.js";
+import { getLogger } from "../../logger.js";
+
+const log = getLogger();
 
 class ActivityHandler {
   async createActivity(req, res, next) {

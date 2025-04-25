@@ -2,34 +2,28 @@ import pino from "pino";
 
 import { getConfig } from "./config.js";
 
-const cnf = getConfig();
+const config = getConfig();
 
-const logConfig = {
-  level: cnf.LOG_LEVEL,
-  timestamp: pino.stdTimeFunctions.isoTime,
-  formatters: {
-    level: (label) => {
-      return { level: label.toUpperCase() };
-    },
-  },
-};
-
-if (!cnf.isProd) {
-  logConfig.transport = {
-    target: "pino-pretty",
-    options: {
-      colorize: true,
+export function getLogger(cnf = config) {
+  const logConfig = {
+    level: cnf.LOG_LEVEL,
+    timestamp: pino.stdTimeFunctions.isoTime,
+    formatters: {
+      level: (label) => {
+        return { level: label.toUpperCase() };
+      },
     },
   };
-}
 
-class Logger {
-  constructor(cnf) {
-    this.log = pino(cnf);
-    this.log.debug(`Logger configured. Level: ${cnf.LOG_LEVEL}`);
+  // pretty-printing in development mode
+  if (!cnf.isProd) {
+    logConfig.transport = {
+      target: "pino-pretty",
+      options: {
+        colorize: true,
+      },
+    };
   }
+  const logger = pino(logConfig);
+  return logger;
 }
-
-const logger = new Logger(logConfig);
-
-export default logger.log;
