@@ -1,6 +1,7 @@
 import Activity from "./activity.model.js";
 import { ActivityBuilder } from "./activity.definitions.js";
 import { mToKM, secToHHMMSS, secToMMSS } from "../../utils/index.js";
+import { parseSort } from "../../utils/index.js";
 
 export function getActivityServices(options) {
   const { log } = options;

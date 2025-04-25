@@ -1,7 +1,15 @@
-import hnd from "./resource.handler.js";
+import { getConfig } from "../../config.js";
+import { getLogger } from "../../logger.js";
+import { getResourceHandler } from "./resource.handler.js";
+import { getResourceServices } from "./resource.service.js";
 import { resourceSchema, querySchema } from "./resource.validators.js";
 import { idSchema } from "../../utils/shared-schemas.js";
 import validate from "../../middleware/validator.js";
+
+const cnf = getConfig();
+const log = getLogger(cnf);
+const svcResource = getResourceServices({ log });
+const hnd = getResourceHandler({ svcResource });
 
 export default {
   group: {
