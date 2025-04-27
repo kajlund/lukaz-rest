@@ -10,6 +10,7 @@ test.group("Configuration tests", () => {
       LOG_LEVEL: "silent",
       LOG_HTTP: 0,
       DB_CONNECTION: "mongodb://localhost:27017/testdb",
+      saltRounds: 10,
     });
     assert.isObject(cnf);
     assert.containsSubset(cnf, {
@@ -20,6 +21,7 @@ test.group("Configuration tests", () => {
       PORT: 4000,
       LOG_LEVEL: "silent",
       LOG_HTTP: 0,
+      saltRounds: 10,
     });
     assert.match(cnf.DB_CONNECTION, /^mongodb:/);
   });

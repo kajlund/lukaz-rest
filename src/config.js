@@ -3,7 +3,7 @@ const ajValidator = ajv({ allErrors: true, async: false });
 
 const configSchema = {
   type: "object",
-  required: ["NODE_ENV", "PORT", "LOG_LEVEL", "LOG_HTTP", "DB_CONNECTION"],
+  required: ["NODE_ENV", "PORT", "LOG_LEVEL", "LOG_HTTP", "DB_CONNECTION", "saltRounds"],
   additionalProperties: false,
   properties: {
     isDev: {
@@ -61,6 +61,14 @@ const configSchema = {
       description: "Database connection string",
       example: "mongodb://localhost:27017/mydb",
     },
+    saltRounds: {
+      type: "number",
+      minimum: 1,
+      maximum: 20,
+      default: 10,
+      description: "Number of rounds to use when hashing passwords",
+      example: 10,
+    },
   },
 };
 
@@ -76,6 +84,7 @@ export function getConfig(env = process.env) {
     LOG_LEVEL: env.LOG_LEVEL,
     LOG_HTTP: parseInt(env.LOG_HTTP),
     DB_CONNECTION: env.DB_CONNECTION,
+    saltRounds: parseInt(env.SALT_ROUNDS) || 10,
   };
 
   const result = validate(cnf);

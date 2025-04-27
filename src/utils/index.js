@@ -1,3 +1,9 @@
+import gravatar from "gravatar";
+
+export function getGravatar(email, size = 50) {
+  return gravatar.url(email, { s: size });
+}
+
 export function secToHHMMSS(sec) {
   const hours = Math.floor(sec / 3600);
   const minutes = Math.floor((sec % 3600) / 60);
