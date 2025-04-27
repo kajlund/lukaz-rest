@@ -1,7 +1,8 @@
 import { Codes } from "../../status.js";
 import { NotFoundError, InternalServerError } from "../../errors.js";
+import { getUserService } from "./user.service.js";
 
-export function getUserHandler(options) {
+export function getUserHandler(options = { svcUser: getUserService() }) {
   const { svcUser } = options;
 
   return {

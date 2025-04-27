@@ -1,8 +1,9 @@
 import { activitySchema } from "./activity.validators.js";
 import { idSchema } from "../../utils/shared-schemas.js";
 import validate from "../../middleware/validator.js";
+import { getActivityHandler } from "./activity.handler.js";
 
-export function getActivityRoutes(options) {
+export function getActivityRoutes(options = { hnd: getActivityHandler() }) {
   const { hnd } = options;
 
   return {

@@ -2,7 +2,9 @@ import { idSchema } from "../../utils/shared-schemas.js";
 import validate from "../../middleware/validator.js";
 import { addUserSchema, updateUserSchema } from "./user.validators.js";
 
-export function getUserRoutes(options) {
+import { getUserHandler } from "./user.handler.js";
+
+export function getUserRoutes(options = { hnd: getUserHandler() }) {
   const { hnd } = options;
 
   return {

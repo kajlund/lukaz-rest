@@ -3,7 +3,9 @@ import { ActivityBuilder } from "./activity.definitions.js";
 import { mToKM, secToHHMMSS, secToMMSS } from "../../utils/index.js";
 import { parseSort } from "../../utils/index.js";
 
-export function getActivityServices(options) {
+import { getLogger } from "../../logger.js";
+
+export function getActivityService(options = { log: getLogger() }) {
   const { log } = options;
 
   const docToEntity = (doc) => {

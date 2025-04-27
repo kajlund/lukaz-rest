@@ -1,7 +1,8 @@
 import Resource from "./resource.model.js";
 import { parseSort } from "../../utils/index.js";
+import { getLogger } from "../../logger.js";
 
-export function getResourceServices(options) {
+export function getResourceService(options = { log: getLogger() }) {
   const { log } = options;
 
   return {

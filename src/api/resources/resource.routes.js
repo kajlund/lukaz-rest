@@ -1,8 +1,9 @@
 import { resourceSchema, querySchema } from "./resource.validators.js";
 import { idSchema } from "../../utils/shared-schemas.js";
 import validate from "../../middleware/validator.js";
+import { getResourceHandler } from "./resource.handler.js";
 
-export function getResourceRoutes(options) {
+export function getResourceRoutes(options = { hnd: getResourceHandler() }) {
   const { hnd } = options;
 
   return {

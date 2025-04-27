@@ -1,7 +1,8 @@
 import { Codes } from "../../status.js";
 import { NotFoundError, InternalServerError } from "../../errors.js";
+import { getResourceService } from "./resource.service.js";
 
-export function getResourceHandler(options) {
+export function getResourceHandler(options = { svcResource: getResourceService() }) {
   const { svcResource } = options;
 
   return {

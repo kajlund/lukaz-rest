@@ -1,7 +1,8 @@
 import { Codes } from "../../status.js";
 import { NotFoundError, InternalServerError } from "../../errors.js";
+import { getActivityService } from "./activity.service.js";
 
-export function getActivityHandler(options) {
+export function getActivityHandler(options = { svcActivity: getActivityService() }) {
   const { svcActivity } = options;
 
   return {

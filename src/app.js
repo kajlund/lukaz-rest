@@ -4,15 +4,6 @@ import httpLogger from "pino-http";
 import { NotFoundError } from "./errors.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import { getDB } from "./db.js";
-import { authUtil } from "./utils/auth.js";
-
-import { getActivityServices } from "./api/activities/activity.service.js";
-import { getResourceServices } from "./api/resources/resource.service.js";
-import { getUserServices } from "./api/users/user.service.js";
-
-import { getActivityHandler } from "./api/activities/activity.handler.js";
-import { getResourceHandler } from "./api/resources/resource.handler.js";
-import { getUserHandler } from "./api/users/user.handler.js";
 
 import { getRootRoutes } from "./api/root.routes.js";
 import { getActivityRoutes } from "./api/activities/activity.routes.js";
@@ -67,22 +58,11 @@ export class App {
   initialize() {
     this.#setupMiddleware();
 
-    const authUtils = authUtil({ cnf: this.cnf, log: this.log });
-    // Initialize services
-    const svcActivity = getActivityServices({ log: this.log });
-    const svcResource = getResourceServices({ log: this.log });
-    const svcUser = getUserServices({ cnf: this.cnf, log: this.log, authUtils });
-
-    // Initialize handlers
-    const hndActivities = getActivityHandler({ svcActivity });
-    const hndResources = getResourceHandler({ svcResource });
-    const hndUsers = getUserHandler({ svcUser });
     // Initialize routes
-
     const rootRoutes = getRootRoutes();
-    const activityRoutes = getActivityRoutes({ hnd: hndActivities });
-    const resourceRoutes = getResourceRoutes({ hnd: hndResources });
-    const userRoutes = getUserRoutes({ hnd: hndUsers });
+    const activityRoutes = getActivityRoutes();
+    const resourceRoutes = getResourceRoutes();
+    const userRoutes = getUserRoutes();
 
     this.#attachRoutes([rootRoutes, activityRoutes, resourceRoutes, userRoutes]);
   }

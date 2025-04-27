@@ -1,10 +1,12 @@
 import User from "./user.model.js";
 import { getGravatar, parseSort } from "../../utils/index.js";
 import { BadRequestError } from "../../errors.js";
+import { authUtil } from "../../utils/auth.js";
 
-export function getUserServices(options) {
-  // eslint-disable-next-line no-unused-vars
-  const { cnf, log, authUtils } = options;
+import { getLogger } from "../../logger.js";
+
+export function getUserService(options = { log: getLogger(), authUtils: authUtil() }) {
+  const { log, authUtils } = options;
 
   return {
     createUser: async (data) => {
