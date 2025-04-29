@@ -1,11 +1,11 @@
 import { test } from "@japa/runner";
 import mongoose from "mongoose";
 
-import { getDB } from "../../src/db.js";
+import { getMongoose } from "../../src/db/index.js";
 
 test.group("DB connection class tests", () => {
   test("db.connect()", async ({ assert }) => {
-    const db = getDB(
+    const db = getMongoose(
       {
         DB_CONNECTION: "mongodb://localhost:27017/testdb",
       },
@@ -18,7 +18,7 @@ test.group("DB connection class tests", () => {
     assert.equal(mongoose.connection.readyState, 1, "Connection should be connected");
   });
   test("db.disconnect()", async ({ assert }) => {
-    const db = getDB(
+    const db = getMongoose(
       {
         DB_CONNECTION: "mongodb://localhost:27017/testdb",
       },

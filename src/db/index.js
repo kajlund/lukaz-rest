@@ -1,6 +1,12 @@
 import mongoose from "mongoose";
 
-export function getDB(cnf, log) {
+import { getConfig } from "../config.js";
+import { getLogger } from "../logger.js";
+
+export function getMongoose() {
+  const cnf = getConfig();
+  const log = getLogger();
+
   return {
     connect: async () => {
       try {

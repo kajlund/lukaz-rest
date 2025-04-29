@@ -3,10 +3,11 @@ import httpLogger from "pino-http";
 
 import { NotFoundError } from "./errors.js";
 import { errorHandler } from "./middleware/error-handler.js";
-import { getDB } from "./db.js";
-
+import { getMongoose } from "./db/index.js";
+import { getMongoDB } from "./db/connection.js";
 import { getRootRoutes } from "./api/root.routes.js";
 import { getActivityRoutes } from "./api/activities/activity.routes.js";
+import { getProverbRoutes } from "./api/proverbs/proverb.routes.js";
 import { getResourceRoutes } from "./api/resources/resource.routes.js";
 import { getUserRoutes } from "./api/users/user.routes.js";
 
@@ -16,7 +17,8 @@ export class App {
     this.log = log;
     this.app = express();
     this.router = express.Router();
-    this.db = getDB(this.cnf, this.log);
+    this.db = getMongoose(this.cnf, this.log);
+    this.mongo = getMongoDB();
   }
 
   #addGroups(groups, prefix = "") {
@@ -30,9 +32,11 @@ export class App {
 
   async #connectDB() {
     await this.db.connect();
+    await this.mongo.connect();
   }
   async #disconnectDB() {
     await this.db.disconnect();
+    await this.mongo.disconnect();
   }
 
   #setupMiddleware() {
@@ -64,7 +68,7 @@ export class App {
     const resourceRoutes = getResourceRoutes();
     const userRoutes = getUserRoutes();
 
-    this.#attachRoutes([rootRoutes, activityRoutes, resourceRoutes, userRoutes]);
+    this.#attachRoutes([rootRoutes, activityRoutes, resourceRoutes, userRoutes, getProverbRoutes()]);
   }
 
   async start() {

@@ -61,6 +61,18 @@ const configSchema = {
       description: "Database connection string",
       example: "mongodb://localhost:27017/mydb",
     },
+    DB_URI: {
+      type: "string",
+      default: "",
+      description: "Database URI",
+      example: "mongodb://localhost:27017",
+    },
+    DB_NAME: {
+      type: "string",
+      default: "",
+      description: "Database name",
+      example: "mydb",
+    },
     saltRounds: {
       type: "number",
       minimum: 1,
@@ -84,6 +96,8 @@ export function getConfig(env = process.env) {
     LOG_LEVEL: env.LOG_LEVEL,
     LOG_HTTP: parseInt(env.LOG_HTTP),
     DB_CONNECTION: env.DB_CONNECTION,
+    DB_URI: env.DB_URI,
+    DB_NAME: env.DB_NAME,
     saltRounds: parseInt(env.SALT_ROUNDS) || 10,
   };
 
