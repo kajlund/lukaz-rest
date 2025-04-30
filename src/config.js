@@ -81,6 +81,16 @@ const configSchema = {
       description: "Number of rounds to use when hashing passwords",
       example: 10,
     },
+    jwtSecret: {
+      type: "string",
+      default: "",
+      description: "Secret for encrypting JWT",
+    },
+    jwtExpiresIn: {
+      type: "string",
+      default: "",
+      description: "Secret for encrypting JWT",
+    },
   },
 };
 
@@ -99,6 +109,8 @@ export function getConfig(env = process.env) {
     DB_URI: env.DB_URI,
     DB_NAME: env.DB_NAME,
     saltRounds: parseInt(env.SALT_ROUNDS) || 10,
+    jwtSecret: env.JWT_SECRET,
+    jwtExpiresIn: env.JWT_EXPIRES,
   };
 
   const result = validate(cnf);
