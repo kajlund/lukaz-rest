@@ -1,3 +1,5 @@
+import path from "node:path";
+
 import express from "express";
 import httpLogger from "pino-http";
 
@@ -41,7 +43,11 @@ export class App {
 
   #setupMiddleware() {
     this.app.disable("x-powered-by");
-    this.app.use(express.json());
+    this.app.set("trust proxy", 1); // trust first proxy
+    this.app.use(express.json({ limit: "1000kb" }));
+    this.app.use(express.urlencoded({ extended: false }));
+    // Serve public
+    this.app.use(express.static(path.join(process.cwd(), "public")));
     if (this.cnf.LOG_HTTP) {
       this.app.use(httpLogger({ logger: this.log }));
     }
