@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { getConfig } from "../config.js";
 import { getLogger } from "../logger.js";
 
-export function authUtil(cnf = getConfig(), log = getLogger()) {
+export function getAuthUtil(cnf = getConfig(), log = getLogger()) {
   return {
     hashPassword: async (password) => {
       const salt = await bcrypt.genSalt(cnf.saltRounds);
