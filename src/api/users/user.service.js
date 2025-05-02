@@ -1,61 +1,48 @@
-import User from "./user.model.js";
-import { getGravatar, parseSort } from "../../utils/index.js";
 import { BadRequestError } from "../../errors.js";
-import { authUtil } from "../../utils/auth.js";
-
+import { getAuthUtil } from "../../utils/auth.js";
+import { getDAO } from "../../db/dao.js";
+import { parseSort } from "../../utils/index.js";
 import { getLogger } from "../../logger.js";
+import { UserBuilder } from "./user.model.js";
 
-export function getUserService(options = { log: getLogger(), authUtils: authUtil() }) {
-  const { log, authUtils } = options;
+export function getUserService(opts = { log: getLogger(), authUtils: getAuthUtil(), userDAO: getDAO("users") }) {
+  const { log, authUtils, userDAO } = opts;
 
   return {
     createUser: async (data) => {
-      let doc;
-      log.debug("Hashing password");
-      data.password = await authUtils.hashPassword(data.password);
-      log.debug("Generating gravatar");
-      data.gravatar = getGravatar(data.email);
       log.debug(`Check for duplicate: ${data.email}`);
-      const existing = await User.findOne({ email: data.email });
+      const existing = await userDAO.findOne({ email: data.email });
       if (existing) throw new BadRequestError("Email already registered");
-      log.debug(data, "Creating user:");
-      try {
-        doc = await User.create(data);
-      } catch (err) {
-        log.debug(err, "Error creating user:");
-      }
-
-      if (!doc) return null;
-      const created = doc.toJSON();
-      // Remove password from the created user object
-      delete created.password;
+      const hashed = await authUtils.hashPassword(data.password);
+      const user = new UserBuilder().setEmail(data.email).setAlias(data.alias).setPassword(hashed).build();
+      log.debug(user, "Creating user:");
+      const created = await userDAO.createOne(user);
       log.debug(created, "Created new user:");
       return created;
     },
     deleteUser: async (id) => {
       log.debug(`Deleting user ${id}`);
-      const doc = await User.findByIdAndDelete(id);
-      if (!doc) return null;
-      const deleted = doc.toJSON();
+      const found = await userDAO.findById(id);
+      if (!found) return null;
+      const deleted = await userDAO.deleteOne(id);
+      if (!deleted) return null;
       // Remove password from the deleted user object
-      delete deleted.password;
-      log.debug(deleted, "Deleted user:");
-      return deleted;
+      delete found.password;
+      log.debug(found, `Deleted user: ${id}`);
+      return found;
     },
     findUserByEmail: async (email) => {
-      const doc = await User.findOne({ email });
-      if (!doc) return null;
-      const found = doc.toJSON();
-      log.debug(found, "Found user:");
+      const found = await userDAO.findOne({ email });
+      if (!found) return null;
+      log.debug(found, `Found user by email: ${email}`);
       return found;
     },
     findUserById: async (id) => {
-      const doc = await User.findById(id);
-      if (!doc) return null;
-      const found = doc.toJSON();
+      const found = await userDAO.findById(id);
+      if (!found) return null;
       // Remove password from the found user object
       delete found.password;
-      log.debug(found, "Found user:");
+      log.debug(found, `Found user by id: ${id}:`);
       return found;
     },
     queryUsers: async (query) => {
@@ -69,7 +56,7 @@ export function getUserService(options = { log: getLogger(), authUtils: authUtil
       }
       const sortObj = parseSort(sort);
       log.debug({ qry, sort: sortObj }, "Querying users:");
-      const users = await User.find(qry).sort(sortObj).lean();
+      const users = await userDAO.findMany(qry, sort);
       users.forEach((user) => {
         // Remove password from the user object
         delete user.password;
@@ -78,14 +65,17 @@ export function getUserService(options = { log: getLogger(), authUtils: authUtil
       return users;
     },
     updateUser: async (id, data) => {
-      log.debug(data, `Updating user ${id}`);
-      const doc = await User.findByIdAndUpdate(id, data, { new: true });
-      if (!doc) return null;
-      const updated = doc.toJSON();
+      log.debug(data, `Updating user: ${id}`);
+      const updated = await userDAO.updateOne(id, data);
+      if (!updated) return null;
+      const found = await userDAO.findById(id);
+      // Remove password from the found user object
+      delete found.password;
+      if (!found) return null;
       // Remove password from the updated user object
       delete updated.password;
-      log.debug(updated, "Updated user:");
-      return updated;
+      log.debug(found, `Updated user: ${id}`);
+      return found;
     },
   };
 }

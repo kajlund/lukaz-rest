@@ -3,12 +3,15 @@ import { ObjectId } from "mongodb";
 import { getLogger } from "../logger.js";
 import { getMongoDB } from "./connection.js";
 
-export async function getDAO(collectionName) {
+export function getDAO(collectionName) {
   const log = getLogger();
   const mongo = getMongoDB();
 
   return {
     createOne: async (data) => {
+      if (!data.createdAt) data.createdAt = new Date().toISOString();
+      if (!data.updatedAt) data.updatedAt = data.createdAt;
+
       const coll = mongo.getCollection(collectionName);
       log.debug(data, `Creating doc in ${collectionName}:`);
       const result = await coll.insertOne(data);
@@ -35,15 +38,22 @@ export async function getDAO(collectionName) {
       const result = await coll.findOne(query);
       return result; // Return found document or null
     },
-    findMany: async (query) => {
+    findMany: async (query = {}) => {
+      // , sort = {}, limit = 100, skip = 0
       // const { filter, sort, limit, skip } = query
       // how to handle filter, sort, limit, skip
-      log.debug(query, `Finding docs in ${collectionName} with query:`);
+      const result = [];
       const coll = mongo.getCollection(collectionName);
-      const result = await coll.find().toArray();
+      log.debug(query, `Finding docs in ${collectionName} with query:`);
+      const cursor = coll.find(query);
+      while (await cursor.hasNext()) {
+        const doc = await cursor.next();
+        result.push(doc);
+      }
       return result; // Return found documents or empty array
     },
     updateOne: async (id, data) => {
+      data.updatedAt = new Date().toISOString();
       log.debug(data, `Updating doc in ${collectionName} with id ${id}:`);
       const coll = mongo.getCollection(collectionName);
       const result = await coll.updateOne({ _id: ObjectId.createFromHexString(id) }, { $set: data });

@@ -60,7 +60,7 @@ export function getProverbHandler(options = { svc: getProverbService() }) {
         return res.status(Codes.OK).json({
           success: true,
           status: Codes.OK,
-          message: `Found ${proverbs.length} activities`,
+          message: `Found ${proverbs.length} proverbs`,
           data: proverbs,
         });
       } catch (err) {

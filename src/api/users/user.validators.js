@@ -17,7 +17,7 @@ export const addUserSchema = {
     },
     password: {
       type: "string",
-      minLength: 3,
+      minLength: 8,
       description: "Password of the user",
       example: "password123",
     },
