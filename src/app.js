@@ -10,7 +10,6 @@ import { getMongoDB } from "./db/connection.js";
 import { getRootRoutes } from "./api/root.routes.js";
 import { getActivityRoutes } from "./api/activities/activity.routes.js";
 import { getAuthRoutes } from "./api/auth/auth.routes.js";
-import { getProverbRoutes } from "./api/proverbs/proverb.routes.js";
 import { getResourceRoutes } from "./api/resources/resource.routes.js";
 import { getUserRoutes } from "./api/users/user.routes.js";
 
@@ -75,7 +74,7 @@ export class App {
     const resourceRoutes = getResourceRoutes();
     const userRoutes = getUserRoutes();
 
-    this.#attachRoutes([rootRoutes, activityRoutes, getAuthRoutes(), resourceRoutes, userRoutes, getProverbRoutes()]);
+    this.#attachRoutes([rootRoutes, activityRoutes, getAuthRoutes(), resourceRoutes, userRoutes]);
   }
 
   async start() {

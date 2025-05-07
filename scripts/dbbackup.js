@@ -47,7 +47,6 @@ log.info(`Environment: ${process.env.NODE_ENV}`);
 try {
   await backupCollection("users");
   await backupCollection("activities");
-  await backupCollection("proverbs");
   await backupCollection("posts");
   await backupCollection("resources");
   log.info("Backup done!");
