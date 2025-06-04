@@ -8,7 +8,6 @@ import { errorHandler } from "./middleware/error-handler.js";
 import { getMongoose } from "./db/index.js";
 import { getMongoDB } from "./db/connection.js";
 import { getRootRoutes } from "./api/root.routes.js";
-import { getActivityRoutes } from "./api/activities/activity.routes.js";
 import { getAuthRoutes } from "./api/auth/auth.routes.js";
 import { getResourceRoutes } from "./api/resources/resource.routes.js";
 import { getUserRoutes } from "./api/users/user.routes.js";
@@ -70,11 +69,10 @@ export class App {
 
     // Initialize routes
     const rootRoutes = getRootRoutes();
-    const activityRoutes = getActivityRoutes();
     const resourceRoutes = getResourceRoutes();
     const userRoutes = getUserRoutes();
 
-    this.#attachRoutes([rootRoutes, activityRoutes, getAuthRoutes(), resourceRoutes, userRoutes]);
+    this.#attachRoutes([rootRoutes, getAuthRoutes(), resourceRoutes, userRoutes]);
   }
 
   async start() {
